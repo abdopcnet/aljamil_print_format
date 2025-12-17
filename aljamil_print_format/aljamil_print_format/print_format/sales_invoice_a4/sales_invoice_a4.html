@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+{% set contact_name = frappe.db.get_value("Dynamic Link",
+{"link_doctype":"Customer","link_name":doc.customer,"parenttype":"Contact"}, "parent") %} {% if
+contact_name %} {% set contact_details = frappe.db.get_value("Contact", contact_name,
+["mobile_no","email_id"]) %} {% set mobile_no = contact_details[0] if contact_details else '' %} {%
+else %} {% set mobile_no = '' %} {% endif %} {% set tax_id = frappe.db.get_value("Customer",
+doc.customer, "tax_id") or '' %}
+
+<html lang="ar" dir="rtl">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Simplified Tax Invoice</title>
+
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap");
+
+			/* ==== PAGE ==== */
+			@page {
+				size: A4 portrait;
+				margin: 8mm 8mm 10mm 8mm;
+			}
+
+			/* ==== BASE ==== */
+			body {
+				font-family: "Tajawal", Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				direction: rtl;
+				font-size: 12px;
+				background: #fff;
+			}
+
+			/* ==== CONTAINER ==== */
+			.invoice-container {
+				width: 100%;
+				min-height: 100%;
+				box-sizing: border-box;
+				padding: 27px 12px;
+				border: 1px solid #000;
+				display: flex;
+				flex-direction: column;
+			}
+
+			/* ==== HEADER ==== */
+			.header {
+				text-align: center;
+				margin-bottom: 6px;
+				height: 53px;
+				position: relative;
+			}
+
+			.header img {
+				height: 53px;
+				line-height: 20px;
+				position: absolute;
+				left: 472px;
+				z-index: 2;
+				top: -17px;
+			}
+
+			.header h3 {
+				border: 1px solid #000;
+				padding: 5px 17px;
+				display: inline-block;
+				margin: 6px 0;
+				font-size: 15px;
+				box-shadow: 4px 4px 0 #000;
+				line-height: 16px;
+				vertical-align: middle;
+				position: absolute;
+				left: -1px;
+				top: -23px;
+			}
+
+			.header h4 {
+				margin: 3px 0;
+				font-size: 14px;
+				padding-top: 21px;
+				padding-bottom: 21px;
+			}
+
+			/* ==== COMPANY ==== */
+			.company-info {
+				font-size: 11px;
+				margin-bottom: 4px;
+				transform: none;
+				width: 551px;
+				height: 32px;
+			}
+
+			.company-info2 {
+				text-align: center;
+				font-size: 11px;
+				border-top: 2px solid #000;
+				border-bottom: 2px solid #000;
+				padding: 2px 0;
+				height: 23px;
+				vertical-align: middle;
+			}
+
+			/* ==== TABLE ==== */
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 6px;
+				font-size: 11px;
+			}
+
+			th,
+			td {
+				border: 1px solid #000;
+				padding: 4px;
+				text-align: center;
+			}
+
+			th {
+				background: #f3f3f3;
+				font-weight: bold;
+			}
+
+			/* ==== INFO TABLE ==== */
+			.table-info td {
+				border: none;
+				text-align: right;
+			}
+
+			.table-info td:first-child {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+
+			.table-info td:nth-child(2) {
+				text-align: center;
+				font-weight: bold;
+			}
+
+			.table-info td:last-child {
+				text-align: left;
+				direction: ltr;
+			}
+
+			/* ==== FLEX AREA ==== */
+			.middle {
+				flex: 1;
+			}
+
+			/* ==== SUMMARY ==== */
+			.tables-container {
+				display: flex;
+				gap: 8px;
+				margin-top: 6px;
+			}
+
+			.table-summary,
+			.table-payment {
+				width: 50%;
+			}
+
+			/* ==== VISION ==== */
+			.table-vision th,
+			.table-vision td {
+				text-align: center;
+			}
+
+			/* ==== FOOTER ==== */
+			.footer {
+				margin-top: auto;
+				border-top: 1px dashed #000;
+				font-size: 10px;
+				padding-top: 5px;
+				text-align: center;
+			}
+
+			/* ==== PRINT ==== */
+			@media print {
+				.invoice-container {
+					border: none;
+					padding: 0;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="invoice-container">
+			<!-- HEADER -->
+			<div class="header">
+				<img src="{{ frappe.utils.get_url('/files/logo.png') }}" />
+				<h3>فاتورة ضريبية مبسطة<br />Simplified Tax Invoice</h3>
+				<h4>شركة نظارات الجميل</h4>
+			</div>
+
+			<!-- COMPANY -->
+			<div class="company-info">
+				<b>السجل التجاري:</b> 101019838<br />
+				<b>الرقم الضريبي:</b> 3105489540003
+			</div>
+
+			<div class="company-info2">معرض الربوة – Al-Rabwa Plaza – Tel: 011-4776853</div>
+
+			<!-- BODY -->
+			<div class="middle">
+				<table class="table-info">
+					<tr>
+						<td>رقم الفاتورة</td>
+						<td>{{doc.name}}</td>
+						<td>Invoice No</td>
+					</tr>
+					<tr>
+						<td>التاريخ</td>
+						<td>{{doc.posting_date}}</td>
+						<td>Date</td>
+					</tr>
+					<tr>
+						<td>اسم العميل</td>
+						<td>{{doc.customer}}</td>
+						<td>Customer</td>
+					</tr>
+					<tr>
+						<td>رقم الجوال</td>
+						<td>{{mobile_no}}</td>
+						<td>Mobile</td>
+					</tr>
+					<tr>
+						<td>الرقم الضريبي</td>
+						<td>{{tax_id}}</td>
+						<td>VAT</td>
+					</tr>
+				</table>
+
+				<table>
+					<tr>
+						<th>الوصف</th>
+						<th>الكمية</th>
+						<th>السعر</th>
+						<th>الإجمالي</th>
+					</tr>
+					{% for i in doc.items %}
+					<tr>
+						<td>{{i.item_name}}</td>
+						<td>{{i.qty}}</td>
+						<td>{{i.rate}}</td>
+						<td>{{i.amount}}</td>
+					</tr>
+					{% endfor %}
+				</table>
+
+				<div class="tables-container">
+					<table class="table-summary">
+						<tr>
+							<td>الإجمالي</td>
+							<td>{{doc.total}}</td>
+						</tr>
+						<tr>
+							<td>الخصم</td>
+							<td>{{doc.custom_total_deduction or 0}}</td>
+						</tr>
+						<tr>
+							<td>الضريبة</td>
+							<td>{{doc.total_taxes_and_charges}}</td>
+						</tr>
+						<tr>
+							<td><b>الصافي</b></td>
+							<td><b>{{doc.grand_total}}</b></td>
+						</tr>
+					</table>
+
+					<table class="table-payment">
+						<tr>
+							<th>طريقة الدفع</th>
+							<th>المبلغ</th>
+						</tr>
+						{% for p in frappe.get_all("Payment Entry Reference",
+						filters={"reference_name":doc.name}, fields=["allocated_amount","parent"])
+						%} {% set pe = frappe.get_doc("Payment Entry", p.parent) %}
+						<tr>
+							<td>{{pe.mode_of_payment}}</td>
+							<td>{{p.allocated_amount}}</td>
+						</tr>
+						{% endfor %}
+					</table>
+				</div>
+
+				<table class="table-vision">
+					<tr>
+						<th>العين</th>
+						<th>SPH</th>
+						<th>CYL</th>
+						<th>AXIS</th>
+						<th>ADD</th>
+						<th>PD</th>
+					</tr>
+					{% for r in doc.custom_size %}
+					<tr>
+						<td>يمين</td>
+						<td>{{r.sphr}}</td>
+						<td>{{r.cylr}}</td>
+						<td>{{r.axisr}}</td>
+						<td>{{r.addr}}</td>
+						<td>{{r.pdr}}</td>
+					</tr>
+					<tr>
+						<td>يسار</td>
+						<td>{{r.sphl}}</td>
+						<td>{{r.cyll}}</td>
+						<td>{{r.axisl}}</td>
+						<td>{{r.addl}}</td>
+						<td>{{r.pdl}}</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+
+			<!-- FOOTER -->
+			<div class="footer">
+				<strong>سياسة الضمان والاستبدال</strong><br />
+				لا يُسترجع نقدًا – النظارات الطبية بعد التركيب لا تُستبدل – شكرًا لزيارتكم
+			</div>
+		</div>
+	</body>
+</html>
